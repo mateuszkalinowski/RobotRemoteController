@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".steering.SteeringFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/button_up"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="520dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_arrow_upward_black_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/button_left"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_arrow_back_black_24dp"
+            app:layout_constraintEnd_toStartOf="@+id/button_right"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_up" />
+
+        <ImageButton
+            android:id="@+id/button_right"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_arrow_forward_black_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_left"
+            app:layout_constraintTop_toBottomOf="@+id/button_up" />
+
+        <ImageButton
+            android:id="@+id/button_down"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="161dp"
+            android:layout_marginEnd="162dp"
+            android:src="@drawable/ic_arrow_downward_black_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_right" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

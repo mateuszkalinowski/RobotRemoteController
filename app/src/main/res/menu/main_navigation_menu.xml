@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/steering_fragment"
+        android:title="@string/steering_menu_label"
+        android:icon="@drawable/ic_settings_remote_black_24dp"/>
+    <item
+        android:id="@+id/information_fragment"
+        android:title="@string/information_menu_label"
+        android:icon="@drawable/ic_info_black_24dp"/>
+    <item
+        android:id="@+id/settings_fragment"
+        android:title="@string/settings_menu_label"
+        android:icon="@drawable/ic_settings_black_24dp"/>
+</menu>

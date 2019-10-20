@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_app_navigation"
+    app:startDestination="@id/steering_fragment">
+
+    <fragment
+        android:id="@+id/steering_fragment"
+        android:name="pl.mateuszkalinowski.robotremotecontroller.steering.SteeringFragment"
+        android:label="Zdalne sterowanie"
+        tools:layout="@layout/steering_fragment" />
+    <fragment
+        android:id="@+id/information_fragment"
+        android:name="pl.mateuszkalinowski.robotremotecontroller.information.InformationFragment"
+        android:label="Informacje"
+        tools:layout="@layout/information_fragment" />
+    <fragment
+        android:id="@+id/settings_fragment"
+        android:name="pl.mateuszkalinowski.robotremotecontroller.settings.SettingsFragment"
+        android:label="Ustawienia"
+        tools:layout="@layout/settings_fragment" />
+</navigation>
