@@ -19,5 +19,15 @@
         android:id="@+id/settings_fragment"
         android:name="pl.mateuszkalinowski.robotremotecontroller.settings.SettingsFragment"
         android:label="Ustawienia"
-        tools:layout="@layout/settings_fragment" />
+        tools:layout="@layout/settings_fragment" >
+        <action
+            android:id="@+id/action_settings_fragment_to_bluetoothSettingsActivity"
+            app:destination="@id/bluetoothSettingsActivity"
+            app:popUpTo="@+id/settings_fragment" />
+    </fragment>
+    <activity
+        android:id="@+id/bluetoothSettingsActivity"
+        android:name="pl.mateuszkalinowski.robotremotecontroller.bluetooth_settings.BluetoothSettingsActivity"
+        android:label="activity_bluetooth_settings"
+        tools:layout="@layout/activity_bluetooth_settings" />
 </navigation>

@@ -3,4 +3,5 @@
     <string name="steering_menu_label">Sterowanie</string>
     <string name="information_menu_label">Informacje</string>
     <string name="settings_menu_label">Ustawienia</string>
+    <string name="title_activity_bluetooth_settings">Ustawienia Bluetooth</string>
 </resources>
