@@ -1,24 +1,21 @@
 package pl.mateuszkalinowski.robotremotecontroller.bluetooth_settings
 
-import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.View
 import android.widget.*
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
+import androidx.core.view.isVisible
 import pl.mateuszkalinowski.robotremotecontroller.R
 
 import kotlinx.android.synthetic.main.activity_bluetooth_settings.*
@@ -28,21 +25,21 @@ import pl.mateuszkalinowski.robotremotecontroller.model.BluetoothListElement
 class BluetoothSettingsActivity : AppCompatActivity() {
 
     private val REQUEST_ENABLE_BT: Int = 1
-    private var peripheralTextView: TextView? = null
     private var startScanningButton: Button? = null
     private var stopScanningButton: Button? = null
     private var foundedDevicesListView: ListView? = null
-    private var bluetoothAdapter: BluetoothAdapter? = null
+    private var scanningProgressBar: ProgressBar? = null
+
     private val discoveredBluetoothDevicesFound: ArrayList<BluetoothListElement> = ArrayList()
 
-    private val adapter: BluetoothSettingsListCustomListAdapter? by lazy(LazyThreadSafetyMode.NONE) {
+    private val customListAdapter: BluetoothSettingsListCustomListAdapter? by lazy(LazyThreadSafetyMode.NONE) {
         BluetoothSettingsListCustomListAdapter(this,discoveredBluetoothDevicesFound)
     }
 
-//    private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
-//        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-//        bluetoothManager.adapter
-//    }
+    private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothManager.adapter
+    }
 
 
 
@@ -58,13 +55,17 @@ class BluetoothSettingsActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        scanningProgressBar = findViewById(R.id.scanning_progress_bar) as ProgressBar
 
-        peripheralTextView = findViewById(R.id.results) as TextView
+        scanningProgressBar?.isVisible = false
 
         startScanningButton = findViewById(R.id.button_start_scanning) as Button
         startScanningButton!!.setOnClickListener {
             startScanningButton?.isEnabled = false
             stopScanningButton?.isEnabled = true
+            scanningProgressBar?.isVisible = true
+            discoveredBluetoothDevicesFound.clear()
+            customListAdapter?.notifyDataSetChanged()
             startScanning()
         }
 
@@ -73,6 +74,7 @@ class BluetoothSettingsActivity : AppCompatActivity() {
             setOnClickListener {
                 startScanningButton?.isEnabled = true
                 stopScanningButton?.isEnabled = false
+                scanningProgressBar?.isVisible = false
                 stopScanning()
             }
         }
@@ -80,14 +82,26 @@ class BluetoothSettingsActivity : AppCompatActivity() {
 
         foundedDevicesListView = findViewById(R.id.bluetooth_devices_list) as ListView
 
-      //  val adapter = BluetoothSettingsListCustomListAdapter(this,discoveredBluetoothDevicesFound)
-        foundedDevicesListView?.adapter = adapter
+        foundedDevicesListView?.adapter = customListAdapter
+
+        foundedDevicesListView?.onItemClickListener = object : AdapterView.OnItemClickListener {
+
+            override fun onItemClick(parent: AdapterView<*>, view: View,
+                                     position: Int, id: Long) {
+                // Toast the values
+
+                var sharedPreferences: SharedPreferences = getPreferences(Context.MODE_PRIVATE)
+                var editor: SharedPreferences.Editor = sharedPreferences.edit()
+                editor.putString("device_mac_address", discoveredBluetoothDevicesFound[position].deviceMacAddress)
+                editor.commit()
+
+//                Toast.makeText(applicationContext, discoveredBluetoothDevicesFound[position].deviceMacAddress,
+//                     Toast.LENGTH_LONG)
+//                    .show()
+            }
+        }
 
        stopScanningButton?.isEnabled = false
-
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-
-        bluetoothAdapter = bluetoothManager.adapter;
 
 
         bluetoothAdapter?.takeIf { it.isDisabled }?.apply {
@@ -114,7 +128,6 @@ class BluetoothSettingsActivity : AppCompatActivity() {
 
 
     fun startScanning() {
-        peripheralTextView!!.setText("");
         AsyncTask.execute {
             run {
                 btScanner?.startScan(scalCallback)
@@ -123,7 +136,6 @@ class BluetoothSettingsActivity : AppCompatActivity() {
     }
 
     fun stopScanning() {
-        peripheralTextView!!.append("Stopped Scanning")
         AsyncTask.execute {
             run {
                 btScanner?.stopScan(scalCallback)
@@ -153,11 +165,10 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                 discoveredBluetoothDevicesFound.add(newElem)
             }
 
-            adapter?.notifyDataSetChanged()
+            customListAdapter?.notifyDataSetChanged()
 
 
         }
     }
-
 
 }

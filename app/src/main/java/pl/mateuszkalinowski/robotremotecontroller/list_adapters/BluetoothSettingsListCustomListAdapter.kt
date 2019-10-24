@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
 import android.widget.TextView
 import pl.mateuszkalinowski.robotremotecontroller.R
@@ -40,11 +39,11 @@ class BluetoothSettingsListCustomListAdapter(
         return dataSource.size
     }
 
-    fun updateData(newData: ArrayList<BluetoothListElement>) {
-        dataSource.clear();
-        dataSource.addAll(newData);
-        super.notifyDataSetChanged()
-    }
+//    fun updateData(newData: ArrayList<BluetoothListElement>) {
+//        dataSource.clear();
+//        dataSource.addAll(newData);
+//        super.notifyDataSetChanged()
+//    }
 
     private val inflater: LayoutInflater
             = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
