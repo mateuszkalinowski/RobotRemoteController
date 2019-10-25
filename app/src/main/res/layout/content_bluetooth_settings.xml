@@ -15,18 +15,8 @@
         android:layout_marginBottom="16dp"
         android:text="Skanuj"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_stop_scanning"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/button_stop_scanning"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Przerwij"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button_start_scanning" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ListView
         android:id="@+id/bluetooth_devices_list"
