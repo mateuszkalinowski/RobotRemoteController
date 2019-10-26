@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 
 import pl.mateuszkalinowski.robotremotecontroller.R
+import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService
 
 class SteeringFragment : Fragment() {
 
@@ -34,11 +35,13 @@ class SteeringFragment : Fragment() {
         val downButton: ImageButton = rootView.findViewById(R.id.button_down)
         val leftButton: ImageButton = rootView.findViewById(R.id.button_left)
         val rightButton: ImageButton = rootView.findViewById(R.id.button_right)
+        val stopButton: ImageButton = rootView.findViewById(R.id.button_stop)
 
         upButton.setOnClickListener(SteeringClass())
         downButton.setOnClickListener(SteeringClass())
         leftButton.setOnClickListener(SteeringClass())
         rightButton.setOnClickListener(SteeringClass())
+        stopButton.setOnClickListener(SteeringClass())
 
         return rootView
     }
@@ -51,23 +54,26 @@ class SteeringFragment : Fragment() {
 
 
     class SteeringClass : View.OnClickListener {
-        private val UP = 0
-        private val RIGHT = 1
-        private val DOWN = 2
-        private val LEFT = 3
+        private val UP = 'u'
+        private val RIGHT = 'r'
+        private val DOWN = 'd'
+        private val LEFT = 'l'
+        private val STOP = 's'
 
         override fun onClick(v: View?) {
 
-            val action: Int
+            var action: Char = 'q';
 
             when (v?.id) {
                 R.id.button_up -> action = UP
                 R.id.button_right -> action = RIGHT
                 R.id.button_down -> action = DOWN
                 R.id.button_left -> action = LEFT
+                R.id.button_stop -> action = STOP
             }
 
-           // Toast.makeText(activity,"Bluetooth is not supported",Toast.LENGTH_SHORT).show()
+            BluetoothService.customCharacteristic?.setValue(action.toString())
+            BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
 
     }
 

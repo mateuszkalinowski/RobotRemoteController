@@ -25,6 +25,7 @@ import pl.mateuszkalinowski.robotremotecontroller.R
 import kotlinx.android.synthetic.main.activity_bluetooth_settings.*
 import pl.mateuszkalinowski.robotremotecontroller.list_adapters.BluetoothSettingsListCustomListAdapter
 import pl.mateuszkalinowski.robotremotecontroller.model.BluetoothListElement
+import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -87,12 +88,6 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                 startScanning()
             }
         }
-//
-//
-//        testButton!!.setOnClickListener {
-//            customCharacteristic!!.setValue("12")
-//            bluetoothGatt!!.writeCharacteristic(customCharacteristic)
-//        }
 
         cancelParringButton = findViewById(R.id.cancel_paring_button)
 
@@ -107,6 +102,10 @@ class BluetoothSettingsActivity : AppCompatActivity() {
             editor.apply()
 
             setPairedDeviceInfo()
+
+            BluetoothService.customCharacteristic = null
+            BluetoothService.bluetoothGatt?.close()
+            BluetoothService.bluetoothGatt = null
 
         }
 
@@ -148,19 +147,6 @@ class BluetoothSettingsActivity : AppCompatActivity() {
         connectedDeviceIcon = findViewById(R.id.bluetooth_icon)
 
         startScanning()
-
-//        var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
-//        val deviceUUID = sharedPreferences.getString("device_mac_address", "").orEmpty()
-//        val deviceName = sharedPreferences.getString("device_name","").orEmpty()
-//
-//
-//        if(deviceUUID != "") {
-//            connectedDeviceName?.text = deviceName
-//            connectedDeviceMacAddress?.text = deviceUUID
-//        } else {
-//            connectedDeviceName?.text = "Brak sparowanego urządzenia"
-//            connectedDeviceIcon?.visibility = View.INVISIBLE
-//        }
 
         setPairedDeviceInfo()
     }
@@ -222,6 +208,8 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                             runOnUiThread {
                                 setPairedDeviceInfo()
                             }
+                            bluetoothGatt?.close()
+                            bluetoothGatt = null
 
                         }
                     }
@@ -248,8 +236,8 @@ class BluetoothSettingsActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        bluetoothGatt?.close()
-        bluetoothGatt = null
+//        bluetoothGatt?.close()
+//        bluetoothGatt = null
     }
 
 
