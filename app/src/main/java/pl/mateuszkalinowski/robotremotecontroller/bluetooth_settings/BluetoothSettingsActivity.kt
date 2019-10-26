@@ -149,11 +149,11 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                         if (characteristic.uuid == UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")) {
                             Log.i("BLUETOOTH","tak")
                             customCharacteristic = characteristic
-                            var sharedPreferences: SharedPreferences = getPreferences(Context.MODE_PRIVATE)
+                            var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
                             var editor: SharedPreferences.Editor = sharedPreferences.edit()
                             editor.putString("device_mac_address", candidateMacAddress)
                             editor.putString("device_name", candidateDeviceName)
-                            editor.commit()
+                            editor.apply()
                         }
                     }
                 }
