@@ -36,12 +36,18 @@ const val ACTION_GATT_SERVICES_DISCOVERED =
 
 class BluetoothSettingsActivity : AppCompatActivity() {
 
+    private var cancelParringButton: ImageButton? = null
 
     private val REQUEST_ENABLE_BT: Int = 1
     private var startScanningButton: Button? = null
     private var foundedDevicesListView: ListView? = null
     private var scanningProgressBar: ProgressBar? = null
     private var bluetoothGatt: BluetoothGatt? = null
+
+    private var connectedDeviceName: TextView? = null;
+    private var connectedDeviceMacAddress: TextView? = null;
+    private var connectedDeviceIcon: ImageView? = null;
+
     private val discoveredBluetoothDevicesFound: ArrayList<BluetoothListElement> = ArrayList()
     private val customListAdapter: BluetoothSettingsListCustomListAdapter? by lazy(LazyThreadSafetyMode.NONE) {
         BluetoothSettingsListCustomListAdapter(this,discoveredBluetoothDevicesFound)
@@ -88,6 +94,22 @@ class BluetoothSettingsActivity : AppCompatActivity() {
 //            bluetoothGatt!!.writeCharacteristic(customCharacteristic)
 //        }
 
+        cancelParringButton = findViewById(R.id.cancel_paring_button)
+
+        cancelParringButton!!.setOnClickListener {
+            bluetoothGatt?.close()
+            bluetoothGatt = null
+
+            var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
+            var editor: SharedPreferences.Editor = sharedPreferences.edit()
+            editor.putString("device_mac_address", "")
+            editor.putString("device_name", "")
+            editor.apply()
+
+            setPairedDeviceInfo()
+
+        }
+
         foundedDevicesListView = findViewById(R.id.bluetooth_devices_list) as ListView
 
         foundedDevicesListView?.adapter = customListAdapter
@@ -121,8 +143,45 @@ class BluetoothSettingsActivity : AppCompatActivity() {
 
         btScanner = bluetoothAdapter?.getBluetoothLeScanner()
 
+        connectedDeviceName = findViewById(R.id.device_name)
+        connectedDeviceMacAddress = findViewById(R.id.device_mac_address)
+        connectedDeviceIcon = findViewById(R.id.bluetooth_icon)
+
         startScanning()
 
+//        var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
+//        val deviceUUID = sharedPreferences.getString("device_mac_address", "").orEmpty()
+//        val deviceName = sharedPreferences.getString("device_name","").orEmpty()
+//
+//
+//        if(deviceUUID != "") {
+//            connectedDeviceName?.text = deviceName
+//            connectedDeviceMacAddress?.text = deviceUUID
+//        } else {
+//            connectedDeviceName?.text = "Brak sparowanego urządzenia"
+//            connectedDeviceIcon?.visibility = View.INVISIBLE
+//        }
+
+        setPairedDeviceInfo()
+    }
+
+    private fun setPairedDeviceInfo() {
+        var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
+        val deviceUUID = sharedPreferences.getString("device_mac_address", "").orEmpty()
+        val deviceName = sharedPreferences.getString("device_name","").orEmpty()
+
+
+        if(deviceUUID != "") {
+            connectedDeviceName?.text = deviceName
+            connectedDeviceMacAddress?.text = deviceUUID
+            connectedDeviceIcon?.visibility = View.VISIBLE
+            cancelParringButton?.visibility = View.VISIBLE
+        } else {
+            connectedDeviceName?.text = "Brak sparowanego urządzenia"
+            connectedDeviceIcon?.visibility = View.INVISIBLE
+            connectedDeviceMacAddress?.text = ""
+            cancelParringButton?.visibility = View.INVISIBLE
+        }
     }
 
     private fun broadcastUpdate(action: String) {
@@ -152,12 +211,18 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                             "onServicesDiscovered: characteristic=" + characteristic.uuid
                         )
                         if (characteristic.uuid == UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")) {
+
                             customCharacteristic = characteristic
                             var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
                             var editor: SharedPreferences.Editor = sharedPreferences.edit()
                             editor.putString("device_mac_address", candidateMacAddress)
                             editor.putString("device_name", candidateDeviceName)
-                            editor.apply()
+                            editor.commit()
+
+                            runOnUiThread {
+                                setPairedDeviceInfo()
+                            }
+
                         }
                     }
                 }
@@ -179,6 +244,12 @@ class BluetoothSettingsActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        bluetoothGatt?.close()
+        bluetoothGatt = null
     }
 
 
