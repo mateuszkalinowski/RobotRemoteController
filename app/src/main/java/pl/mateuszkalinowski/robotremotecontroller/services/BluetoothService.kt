@@ -1,34 +1,34 @@
 //package pl.mateuszkalinowski.robotremotecontroller.services
 //
+//import android.app.Service
 //import android.bluetooth.BluetoothAdapter
 //import android.bluetooth.BluetoothDevice
 //import android.bluetooth.BluetoothGatt
 //import android.bluetooth.BluetoothManager
 //import android.bluetooth.le.BluetoothLeScanner
 //import android.content.Context
+//import android.content.Intent
+//import android.os.IBinder
 //import androidx.core.content.ContextCompat.getSystemService
 //
-//class BluetoothService(context: Context) {
+//class BluetoothService {
 //
-//    private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
-//        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-//        bluetoothManager.adapter
-//    }
-//
-//
-//
-//    var btScanner: BluetoothLeScanner? = null;
-//
-//
-//    private val BluetoothAdapter.isDisabled: Boolean
-//        get() = !isEnabled
-//
-//    constructor() {
+//    private constructor() {
 //
 //    }
 //
+//    var bluetoothGatt: BluetoothGatt? = null
 //
-//    fun connect(macAddress: String){
-//       var bluetoothDevice: BluetoothDevice  =
+//    companion object {
+//        private lateinit var instance: BluetoothService
+//
+//        val bluetoothServiceInstance: BluetoothService
+//            get() {
+//                if(instance == null) {
+//                    instance = BluetoothService()
+//                }
+//                return instance
+//            }
 //    }
+//
 //}
