@@ -14,53 +14,51 @@
             android:id="@+id/button_up"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginTop="24dp"
             android:adjustViewBounds="true"
             android:src="@drawable/ic_arrow_upward_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_right"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.495"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider_arrows_up" />
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/button_left"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:src="@drawable/ic_arrow_back_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_down"
             app:layout_constraintEnd_toStartOf="@+id/button_right"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_up" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/button_right"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:src="@drawable/ic_arrow_forward_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_down"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button_left"
-            app:layout_constraintTop_toBottomOf="@+id/button_up" />
+            app:layout_constraintStart_toEndOf="@+id/button_left" />
 
         <ImageButton
             android:id="@+id/button_down"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginStart="161dp"
-            android:layout_marginEnd="162dp"
+            android:layout_marginBottom="16dp"
             android:src="@drawable/ic_arrow_downward_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/divider_arrows_down"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_left" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <View
             android:id="@+id/divider_arrows_up"
             android:layout_width="409dp"
             android:layout_height="8dp"
-            android:layout_marginTop="480dp"
+            android:layout_marginBottom="16dp"
             android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toTopOf="@+id/button_up"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <View
             android:id="@+id/divider_arrows_down"

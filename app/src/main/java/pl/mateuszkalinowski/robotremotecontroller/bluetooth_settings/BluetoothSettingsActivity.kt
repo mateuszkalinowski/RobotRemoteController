@@ -52,18 +52,18 @@ class BluetoothSettingsActivity : AppCompatActivity() {
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
     }
-    var btScanner: BluetoothLeScanner? = null;
-    
-    var candidateMacAddress: String? = null;
-    var candidateDeviceName: String? = null;
-    
+    var btScanner: BluetoothLeScanner? = null
+
+    var candidateMacAddress: String? = null
+    var candidateDeviceName: String? = null
+    var candidatePosition: Int = -1
+
     private val BluetoothAdapter.isDisabled: Boolean
         get() = !isEnabled
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_settings)
-        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         scanningProgressBar = findViewById(R.id.scanning_progress_bar) as ProgressBar
@@ -103,10 +103,13 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                 stopScanning()
 
                 candidateMacAddress = discoveredBluetoothDevicesFound[position].deviceMacAddress
-                candidateDeviceName =discoveredBluetoothDevicesFound[position].deviceName
-                
-                bluetoothDevice = bluetoothAdapter!!.getRemoteDevice(discoveredBluetoothDevicesFound[position].deviceMacAddress);
-                bluetoothGatt = bluetoothDevice!!.connectGatt(applicationContext,false, mGattCallback)
+                candidateDeviceName = discoveredBluetoothDevicesFound[position].deviceName
+                candidatePosition = position
+
+                bluetoothDevice =
+                    bluetoothAdapter!!.getRemoteDevice(discoveredBluetoothDevicesFound[position].deviceMacAddress);
+                bluetoothGatt =
+                    bluetoothDevice!!.connectGatt(applicationContext, false, mGattCallback)
             }
         }
 
@@ -117,6 +120,8 @@ class BluetoothSettingsActivity : AppCompatActivity() {
         }
 
         btScanner = bluetoothAdapter?.getBluetoothLeScanner()
+
+        startScanning()
 
     }
 
@@ -147,7 +152,6 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                             "onServicesDiscovered: characteristic=" + characteristic.uuid
                         )
                         if (characteristic.uuid == UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")) {
-                            Log.i("BLUETOOTH","tak")
                             customCharacteristic = characteristic
                             var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
                             var editor: SharedPreferences.Editor = sharedPreferences.edit()
@@ -179,6 +183,8 @@ class BluetoothSettingsActivity : AppCompatActivity() {
 
 
     fun startScanning() {
+
+        candidatePosition = -1
 
         startScanningButton?.isEnabled = false
         scanningProgressBar?.isVisible = true
@@ -224,7 +230,7 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                     deviceAddress
                 )
                 if(!discoveredBluetoothDevicesFound.contains(newElem))
-                discoveredBluetoothDevicesFound.add(newElem)
+                    discoveredBluetoothDevicesFound.add(newElem)
                 else {
                     val item =
                         discoveredBluetoothDevicesFound[discoveredBluetoothDevicesFound.indexOf(newElem)]
@@ -250,8 +256,8 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                 }
                 else {
                     Toast.makeText(applicationContext, "Bez uprawnień do lokalizacji nie jest możliwe wyszukiwanie urządzeń bluetooth",
-                     Toast.LENGTH_LONG)
-                    .show()
+                        Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         }

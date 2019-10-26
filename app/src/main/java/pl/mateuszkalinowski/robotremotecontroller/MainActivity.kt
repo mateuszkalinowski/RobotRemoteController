@@ -41,8 +41,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.steering_fragment,R.id.information_fragment,R.id.settings_fragment
             )
         )
-        setSupportActionBar(findViewById(R.id.main_toolbar))
-        setupActionBarWithNavController(navigationController,applicationBarConfiguration)
+        //setSupportActionBar(findViewById(R.id.main_toolbar))
+        //setupActionBarWithNavController(navigationController,applicationBarConfiguration)
         bottomNavigationView.setupWithNavController(navigationController)
 
         setBluetoothDeviceAddressAndName()
