@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentActivity
 import pl.mateuszkalinowski.robotremotecontroller.R
 
 import kotlinx.android.synthetic.main.activity_bluetooth_settings.*
@@ -54,6 +53,10 @@ class BluetoothSettingsActivity : AppCompatActivity() {
         bluetoothManager.adapter
     }
     var btScanner: BluetoothLeScanner? = null;
+    
+    var candidateMacAddress: String? = null;
+    var candidateDeviceName: String? = null;
+    
     private val BluetoothAdapter.isDisabled: Boolean
         get() = !isEnabled
 
@@ -99,11 +102,9 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                 scanningProgressBar?.isVisible = false
                 stopScanning()
 
-                var sharedPreferences: SharedPreferences = getPreferences(Context.MODE_PRIVATE)
-                var editor: SharedPreferences.Editor = sharedPreferences.edit()
-                editor.putString("device_mac_address", discoveredBluetoothDevicesFound[position].deviceMacAddress)
-                editor.commit()
-
+                candidateMacAddress = discoveredBluetoothDevicesFound[position].deviceMacAddress
+                candidateDeviceName =discoveredBluetoothDevicesFound[position].deviceName
+                
                 bluetoothDevice = bluetoothAdapter!!.getRemoteDevice(discoveredBluetoothDevicesFound[position].deviceMacAddress);
                 bluetoothGatt = bluetoothDevice!!.connectGatt(applicationContext,false, mGattCallback)
             }
@@ -148,6 +149,11 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                         if (characteristic.uuid == UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")) {
                             Log.i("BLUETOOTH","tak")
                             customCharacteristic = characteristic
+                            var sharedPreferences: SharedPreferences = getPreferences(Context.MODE_PRIVATE)
+                            var editor: SharedPreferences.Editor = sharedPreferences.edit()
+                            editor.putString("device_mac_address", candidateMacAddress)
+                            editor.putString("device_name", candidateDeviceName)
+                            editor.commit()
                         }
                     }
                 }
