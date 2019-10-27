@@ -44,11 +44,20 @@ class SteeringFragment : Fragment() {
         val rightButton: ImageButton = rootView.findViewById(R.id.button_right)
         val stopButton: ImageButton = rootView.findViewById(R.id.button_stop)
 
+        val upleftButton: ImageButton = rootView.findViewById(R.id.button_up_left)
+        val uprightButton: ImageButton = rootView.findViewById(R.id.button_up_right)
+        val downleftButton: ImageButton = rootView.findViewById(R.id.button_down_left)
+        val downrightButton: ImageButton = rootView.findViewById(R.id.button_down_right)
+
         upButton.setOnClickListener(SteeringClass())
         downButton.setOnClickListener(SteeringClass())
         leftButton.setOnClickListener(SteeringClass())
         rightButton.setOnClickListener(SteeringClass())
         stopButton.setOnClickListener(SteeringClass())
+        upleftButton.setOnClickListener(SteeringClass())
+        uprightButton.setOnClickListener(SteeringClass())
+        downleftButton.setOnClickListener(SteeringClass())
+        downrightButton.setOnClickListener(SteeringClass())
 
         return rootView
     }
@@ -67,6 +76,11 @@ class SteeringFragment : Fragment() {
         private val LEFT = "CMD+LEFT\n"
         private val STOP = "CMD+STOP\n"
 
+        private val UPRIGHT = "CMD+UPRIGHT\n"
+        private val UPLEFT = "CMD+UPLEFT\n"
+        private val DOWNRIGHT = "CMD+DOWNRIGHT\n"
+        private val DOWNLEFT = "CMD+DOWNLEFT\n"
+
         override fun onClick(v: View?) {
 
             if(BluetoothService.customCharacteristic != null) {
@@ -79,6 +93,10 @@ class SteeringFragment : Fragment() {
                     R.id.button_down -> action = DOWN
                     R.id.button_left -> action = LEFT
                     R.id.button_stop -> action = STOP
+                    R.id.button_up_right -> action = UPRIGHT
+                    R.id.button_up_left -> action = UPLEFT
+                    R.id.button_down_right -> action = DOWNRIGHT
+                    R.id.button_down_left -> action = DOWNLEFT
                 }
 
                 BluetoothService.customCharacteristic?.setValue(action)

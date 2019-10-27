@@ -79,5 +79,41 @@
             app:layout_constraintStart_toEndOf="@+id/button_left"
             app:layout_constraintTop_toBottomOf="@+id/button_up" />
 
+        <ImageButton
+            android:id="@+id/button_up_right"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="18dp"
+            android:src="@drawable/ic_redo_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_right"
+            app:layout_constraintStart_toEndOf="@+id/button_up" />
+
+        <ImageButton
+            android:id="@+id/button_up_left"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="19dp"
+            android:src="@drawable/ic_undo_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_left"
+            app:layout_constraintEnd_toStartOf="@+id/button_up" />
+
+        <ImageButton
+            android:id="@+id/button_down_right"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="18dp"
+            android:src="@drawable/ic_subdirectory_arrow_right_black_24dp"
+            app:layout_constraintStart_toEndOf="@+id/button_down"
+            app:layout_constraintTop_toBottomOf="@+id/button_right" />
+
+        <ImageButton
+            android:id="@+id/button_down_left"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="19dp"
+            android:src="@drawable/ic_subdirectory_arrow_left_black_24dp"
+            app:layout_constraintEnd_toStartOf="@+id/button_down"
+            app:layout_constraintTop_toBottomOf="@+id/button_left" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
