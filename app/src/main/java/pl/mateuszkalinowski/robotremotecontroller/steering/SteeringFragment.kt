@@ -54,15 +54,15 @@ class SteeringFragment : Fragment() {
 
 
     class SteeringClass : View.OnClickListener {
-        private val UP = 'u'
-        private val RIGHT = 'r'
-        private val DOWN = 'd'
-        private val LEFT = 'l'
-        private val STOP = 's'
+        private val UP = "CMD+UP\n"
+        private val RIGHT = "CMD+RIGHT\n"
+        private val DOWN = "CMD+DOWN\n"
+        private val LEFT = "CMD+LEFT\n"
+        private val STOP = "CMD+STOP\n"
 
         override fun onClick(v: View?) {
 
-            var action: Char = 'q';
+            var action: String = "";
 
             when (v?.id) {
                 R.id.button_up -> action = UP
@@ -72,7 +72,7 @@ class SteeringFragment : Fragment() {
                 R.id.button_stop -> action = STOP
             }
 
-            BluetoothService.customCharacteristic?.setValue(action.toString())
+            BluetoothService.customCharacteristic?.setValue(action)
             BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
 
     }
