@@ -8,7 +8,10 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -35,8 +38,12 @@ class MainActivity : AppCompatActivity() {
     private var customCharacteristic: BluetoothGattCharacteristic? = null
     private var bluetoothGatt: BluetoothGatt? = null
 
-    var deviceUUID: String = "";
-    var deviceName: String = "";
+    private lateinit var connectButton: Button
+
+    private lateinit var connectionStatusTextView: TextView
+
+    var deviceUUID: String = ""
+    var deviceName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,20 +53,11 @@ class MainActivity : AppCompatActivity() {
 
         val navigationController = findNavController(R.id.navigation_fragment)
 
-        val applicationBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.steering_fragment,R.id.information_fragment,R.id.settings_fragment
-            )
-        )
-        //setSupportActionBar(findViewById(R.id.main_toolbar))
-        //setupActionBarWithNavController(navigationController,applicationBarConfiguration)
         bottomNavigationView.setupWithNavController(navigationController)
 
         setBluetoothDeviceAddressAndName()
 
         if(deviceUUID != "") {
-
-          //  if(BluetoothService.bluetoothGatt == null) {
 
                 bluetoothAdapter?.takeIf { it.isDisabled }?.apply {
                     val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
@@ -73,16 +71,50 @@ class MainActivity : AppCompatActivity() {
                     bluetoothDevice!!.connectGatt(applicationContext, false, mGattCallback)
 
                 BluetoothService.bluetoothGatt = bluetoothGatt
-//            }
-//            else {
-//                Toast.makeText(applicationContext,"Nie null",Toast.LENGTH_LONG).show()
-//
-//
-//
-//            }
-
         } else {
             Toast.makeText(applicationContext,"Nie znaleziono urządzenia. Wybierz urządzenie bluetooth z ustawień",Toast.LENGTH_LONG).show()
+        }
+
+        connectionStatusTextView = findViewById(R.id.connection_status)
+        connectButton = findViewById(R.id.button_recconect)
+
+        if(BluetoothService.bluetoothGatt != null && BluetoothService.customCharacteristic != null) {
+            connectionStatusTextView.text = "Połączony"
+            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
+            connectButton.text = "Rozłącz"
+        } else {
+            connectionStatusTextView.text = "Rozłączony"
+            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.failure))
+        }
+
+        connectButton.setOnClickListener{
+            if(BluetoothService.bluetoothGatt != null) {
+                BluetoothService.bluetoothGatt?.close()
+                BluetoothService.bluetoothGatt = null
+                BluetoothService.customCharacteristic = null
+
+                connectionStatusTextView.text = "Rozłączony"
+                connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.failure))
+                connectButton.text = "Połącz"
+            } else {
+                if(deviceUUID =="") {
+                    Toast.makeText(applicationContext,"Nie znaleziono urządzenia. Wybierz urządzenie bluetooth z ustawień",Toast.LENGTH_LONG).show()
+                }
+                else {
+                    bluetoothAdapter?.takeIf { it.isDisabled }?.apply {
+                        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+                    }
+
+                    bluetoothDevice =
+                        bluetoothAdapter!!.getRemoteDevice(deviceUUID)
+
+                    bluetoothGatt =
+                        bluetoothDevice!!.connectGatt(applicationContext, false, mGattCallback)
+
+                    BluetoothService.bluetoothGatt = bluetoothGatt
+                }
+            }
         }
     }
 
@@ -91,7 +123,6 @@ class MainActivity : AppCompatActivity() {
         setBluetoothDeviceAddressAndName()
 
         if(deviceUUID != "") {
-
             if(BluetoothService.bluetoothGatt == null) {
 
                 bluetoothAdapter?.takeIf { it.isDisabled }?.apply {
@@ -108,8 +139,20 @@ class MainActivity : AppCompatActivity() {
                 BluetoothService.bluetoothGatt = bluetoothGatt
             }
 
+
+
         } else {
             Toast.makeText(applicationContext,"Nie znaleziono urządzenia. Wybierz urządzenie bluetooth z ustawień",Toast.LENGTH_LONG).show()
+        }
+
+
+        if(BluetoothService.bluetoothGatt != null && BluetoothService.customCharacteristic != null) {
+            connectionStatusTextView.text = "Połączony"
+            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
+            connectButton.text = "Rozłącz"
+        } else {
+            connectionStatusTextView.text = "Rozłączony"
+            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.failure))
         }
     }
 
@@ -125,7 +168,7 @@ class MainActivity : AppCompatActivity() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             var intentAction: String;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                intentAction = ACTION_GATT_CONNECTED;
+                intentAction = ACTION_GATT_CONNECTED
                 broadcastUpdate(intentAction)
                 Log.i("BLUETOOTH","Connected to GATT server")
                 Log.i("BLUETOOTH","Attemting to discover services" + bluetoothGatt?.discoverServices())
@@ -143,15 +186,21 @@ class MainActivity : AppCompatActivity() {
                             "onServicesDiscovered: characteristic=" + characteristic.uuid
                         )
                         if (characteristic.uuid == UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")) {
-
                             customCharacteristic = characteristic
-                            BluetoothService.customCharacteristic = customCharacteristic;
+                            BluetoothService.customCharacteristic = customCharacteristic
 
+                            runOnUiThread {
+                                connectionStatusTextView.text = "Połączony"
+                                connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
+                                connectButton.text = "Rozłącz"
+                            }
                         }
                     }
                 }
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
             } else {
+                BluetoothService.bluetoothGatt?.close()
+                BluetoothService.bluetoothGatt = null
                 Log.w("BLUETOOTH", "onServicesDiscovered received: $status")
             }
         }

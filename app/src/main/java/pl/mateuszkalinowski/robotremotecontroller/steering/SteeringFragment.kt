@@ -2,6 +2,7 @@ package pl.mateuszkalinowski.robotremotecontroller.steering
 
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.graphics.Color
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,8 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper.UP
+import pl.mateuszkalinowski.robotremotecontroller.MainActivity
 
 import pl.mateuszkalinowski.robotremotecontroller.R
 import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService
@@ -23,6 +27,9 @@ class SteeringFragment : Fragment() {
         fun newInstance() = SteeringFragment()
     }
     private lateinit var viewModel: SteeringViewModel
+
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,19 +69,24 @@ class SteeringFragment : Fragment() {
 
         override fun onClick(v: View?) {
 
-            var action: String = "";
+            if(BluetoothService.customCharacteristic != null) {
 
-            when (v?.id) {
-                R.id.button_up -> action = UP
-                R.id.button_right -> action = RIGHT
-                R.id.button_down -> action = DOWN
-                R.id.button_left -> action = LEFT
-                R.id.button_stop -> action = STOP
+                var action = ""
+
+                when (v?.id) {
+                    R.id.button_up -> action = UP
+                    R.id.button_right -> action = RIGHT
+                    R.id.button_down -> action = DOWN
+                    R.id.button_left -> action = LEFT
+                    R.id.button_stop -> action = STOP
+                }
+
+                BluetoothService.customCharacteristic?.setValue(action)
+                BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
+
+            } else {
+                Toast.makeText(v?.context,"Najpiew podłącz się do urządzenia bluetooth",Toast.LENGTH_SHORT).show()
             }
-
-            BluetoothService.customCharacteristic?.setValue(action)
-            BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
-
     }
 
     }

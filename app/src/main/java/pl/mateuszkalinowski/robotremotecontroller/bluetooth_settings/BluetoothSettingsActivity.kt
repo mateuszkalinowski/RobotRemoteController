@@ -210,6 +210,9 @@ class BluetoothSettingsActivity : AppCompatActivity() {
                             }
                             bluetoothGatt?.close()
                             bluetoothGatt = null
+                            BluetoothService.bluetoothGatt?.close()
+                            BluetoothService.bluetoothGatt = null
+                            BluetoothService.customCharacteristic = null
 
                         }
                     }
