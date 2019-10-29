@@ -18,6 +18,7 @@
             android:layout_marginTop="128dp"
             android:layout_marginEnd="176dp"
             android:text="Ustawienia"
+            android:textColor="@android:color/black"
             android:textSize="64sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
