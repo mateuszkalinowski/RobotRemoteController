@@ -1,6 +1,5 @@
 package pl.mateuszkalinowski.robotremotecontroller
 
-import android.app.Activity
 import android.bluetooth.*
 import android.content.Context
 import android.content.Intent
@@ -13,8 +12,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import pl.mateuszkalinowski.robotremotecontroller.bluetooth_settings.ACTION_GATT_CONNECTED
@@ -44,6 +41,13 @@ class MainActivity : AppCompatActivity() {
 
     var deviceUUID: String = ""
     var deviceName: String = ""
+
+    private var distance: String = "";
+
+    fun getDistance(): String {
+        return distance
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -189,6 +193,14 @@ class MainActivity : AppCompatActivity() {
                             customCharacteristic = characteristic
                             BluetoothService.customCharacteristic = customCharacteristic
 
+                            bluetoothGatt?.setCharacteristicNotification(characteristic,true)
+
+                            val uuid: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+                            val descriptor = characteristic.getDescriptor(uuid).apply {
+                                value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            }
+                            bluetoothGatt?.writeDescriptor(descriptor)
+
                             runOnUiThread {
                                 connectionStatusTextView.text = "Połączony"
                                 connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
@@ -204,6 +216,26 @@ class MainActivity : AppCompatActivity() {
                 Log.w("BLUETOOTH", "onServicesDiscovered received: $status")
             }
         }
+
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt?,
+            characteristic: BluetoothGattCharacteristic?
+        ) {
+            //super.onCharacteristicChanged(gatt, characteristic)
+            val receivedValue = characteristic?.getStringValue(0).orEmpty()
+            if(receivedValue.startsWith("MSG+DST",ignoreCase = true)) {
+                    distance = receivedValue.substring("MSG+DST".length)
+                }
+        }
+
+    }
+
+
+    fun convertFromInteger(i: Int): UUID {
+        val MSB = 0x0000000000001000L
+        val LSB = -0x7fffff7fa064cb05L
+        val value = (i and -0x1).toLong()
+        return UUID(MSB or (value shl 32), LSB)
     }
 
     private fun broadcastUpdate(action: String) {

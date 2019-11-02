@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import pl.mateuszkalinowski.robotremotecontroller.R
 
-import kotlinx.android.synthetic.main.activity_bluetooth_settings.*
 import pl.mateuszkalinowski.robotremotecontroller.list_adapters.BluetoothSettingsListCustomListAdapter
 import pl.mateuszkalinowski.robotremotecontroller.model.BluetoothListElement
 import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService
@@ -30,7 +29,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 const val ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED"
-const val ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED"
+//const val ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED"
 const val ACTION_GATT_SERVICES_DISCOVERED =
     "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED"
 

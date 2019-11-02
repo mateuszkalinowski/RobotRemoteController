@@ -13,9 +13,6 @@ import pl.mateuszkalinowski.robotremotecontroller.R
 
 class SettingsFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = SettingsFragment()
-    }
 
     private lateinit var viewModel: SettingsViewModel
 

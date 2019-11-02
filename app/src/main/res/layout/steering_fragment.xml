@@ -12,21 +12,21 @@
 
         <Button
             android:id="@+id/move_head_left"
-            android:layout_width="55dp"
-            android:layout_height="40dp"
+            android:layout_width="70dp"
+            android:layout_height="45dp"
             android:layout_marginBottom="24dp"
             android:text="Lewo"
-            android:textSize="8sp"
+            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/textView6"
             app:layout_constraintStart_toStartOf="@+id/head_controll_slider" />
 
         <Button
             android:id="@+id/move_head_right"
-            android:layout_width="55dp"
-            android:layout_height="40dp"
+            android:layout_width="70dp"
+            android:layout_height="45dp"
             android:layout_marginBottom="24dp"
             android:text="Prawo"
-            android:textSize="8sp"
+            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/textView6"
             app:layout_constraintEnd_toEndOf="@+id/head_controll_slider" />
 
@@ -192,56 +192,86 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sound_3" />
 
-        <SeekBar
-            android:id="@+id/velocity_seek_bar"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="108dp"
-            android:rotation="270"
-            app:layout_constraintBottom_toTopOf="@+id/sound_4"
-            app:layout_constraintStart_toEndOf="@+id/textView6" />
-
         <TextView
             android:id="@+id/textView8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="96dp"
+            android:layout_marginTop="8dp"
             android:text="Prędkość"
             android:textColor="@android:color/black"
-            app:layout_constraintBottom_toTopOf="@+id/velocity_seek_bar"
-            app:layout_constraintEnd_toEndOf="@+id/sound_4" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_up_right"
+            app:layout_constraintTop_toBottomOf="@+id/divider_arrows_up" />
 
         <SeekBar
             android:id="@+id/head_controll_slider"
-            android:layout_width="200dp"
+            android:layout_width="256dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginBottom="16dp"
             android:progress="50"
             android:progressTint="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="@+id/velocity_seek_bar"
-            app:layout_constraintEnd_toStartOf="@+id/velocity_seek_bar"
+            app:layout_constraintBottom_toTopOf="@+id/move_head_forward"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/move_head_forward"
-            android:layout_width="55dp"
-            android:layout_height="40dp"
+            android:layout_width="70dp"
+            android:layout_height="45dp"
             android:layout_marginBottom="24dp"
             android:text="Przód"
-            android:textSize="8sp"
+            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/textView6"
             app:layout_constraintEnd_toEndOf="@+id/head_controll_slider"
             app:layout_constraintStart_toStartOf="@+id/head_controll_slider" />
 
         <SeekBar
-            android:id="@+id/seekBar3"
+            android:id="@+id/velocity_seek_bar"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
             android:rotation="270"
             app:layout_constraintBottom_toTopOf="@+id/divider_arrows_down"
-            app:layout_constraintStart_toStartOf="@+id/button_right"
-            app:layout_constraintTop_toBottomOf="@+id/divider_arrows_up" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_right"
+            app:layout_constraintTop_toBottomOf="@+id/divider_arrows_up"
+            app:layout_constraintVertical_bias="0.494" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="Podświetlenie\n Ekranu"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/button_up_left"
+            app:layout_constraintEnd_toStartOf="@+id/button_up_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/button_up_left" />
+
+        <Switch
+            android:id="@+id/display_backlight_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toStartOf="@+id/button_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+        <TextView
+            android:id="@+id/distance_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="59dp"
+            android:text="0"
+            android:textSize="94sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

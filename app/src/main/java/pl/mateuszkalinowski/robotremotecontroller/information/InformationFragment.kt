@@ -11,10 +11,6 @@ import pl.mateuszkalinowski.robotremotecontroller.R
 
 class InformationFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = InformationFragment()
-    }
-
     private lateinit var viewModel: InformationViewModel
 
     override fun onCreateView(
