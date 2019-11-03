@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import pl.mateuszkalinowski.robotremotecontroller.bluetooth_settings.ACTION_GATT_CONNECTED
 import pl.mateuszkalinowski.robotremotecontroller.bluetooth_settings.ACTION_GATT_SERVICES_DISCOVERED
 import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService
+import pl.mateuszkalinowski.robotremotecontroller.steering.SteeringFragment
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -42,10 +43,16 @@ class MainActivity : AppCompatActivity() {
     var deviceUUID: String = ""
     var deviceName: String = ""
 
+    var c = '\u0000'
+
     private var distance: String = "";
 
     fun getDistance(): String {
         return distance
+    }
+
+    fun clearDistance() {
+        distance = "";
     }
 
 
@@ -205,6 +212,13 @@ class MainActivity : AppCompatActivity() {
                                 connectionStatusTextView.text = "Połączony"
                                 connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
                                 connectButton.text = "Rozłącz"
+
+                                val navHostFragment =
+                                    supportFragmentManager.findFragmentById(R.id.navigation_fragment)
+
+                                var test = navHostFragment?.childFragmentManager?.fragments?.get(0) as SteeringFragment
+
+                                test.setDefaultSettings()
                             }
                         }
                     }
@@ -223,8 +237,8 @@ class MainActivity : AppCompatActivity() {
         ) {
             //super.onCharacteristicChanged(gatt, characteristic)
             val receivedValue = characteristic?.getStringValue(0).orEmpty()
-            if(receivedValue.startsWith("MSG+DST",ignoreCase = true)) {
-                    distance = receivedValue.substring("MSG+DST".length)
+            if(receivedValue.startsWith("MSG,DST",ignoreCase = true)) {
+                    distance = receivedValue.substring("MSG,DST".length)
                 }
         }
 

@@ -2,6 +2,7 @@ package pl.mateuszkalinowski.robotremotecontroller.steering
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,20 @@ class SteeringFragment : Fragment() {
 
     private lateinit var viewModel: SteeringViewModel
 
+    lateinit var velocitySeekBar: SeekBar
+    lateinit var headControlSlider: SeekBar
+
+    lateinit var displayBacklightSwitch: Switch
+    lateinit var distanceSensorSwitch: Switch
+
+    fun setDefaultSettings() {
+        velocitySeekBar.progress = 100
+        headControlSlider.progress = 90
+
+        displayBacklightSwitch.isChecked = true
+        distanceSensorSwitch.isChecked = true
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,7 +41,7 @@ class SteeringFragment : Fragment() {
 
         val distanceTextView: TextView = rootView.findViewById(R.id.distance_text_view)
 
-        val thread = object : Thread() {
+        var thread = object : Thread() {
 
             override fun run() {
                 try {
@@ -42,6 +57,9 @@ class SteeringFragment : Fragment() {
                         })
                     }
                 } catch (e: InterruptedException) {
+                    activity?.runOnUiThread(Runnable {
+                        distanceTextView.text = ""
+                    })
                 }
 
             }
@@ -65,19 +83,45 @@ class SteeringFragment : Fragment() {
         val moveHeadRightButton: Button = rootView.findViewById(R.id.move_head_right)
         val moveHeadLeftButton: Button = rootView.findViewById(R.id.move_head_left)
 
-        val velocitySeekBar: SeekBar = rootView.findViewById(R.id.velocity_seek_bar)
-        val headControlSlider: SeekBar = rootView.findViewById(R.id.head_controll_slider)
+        velocitySeekBar = rootView.findViewById(R.id.velocity_seek_bar)
+        headControlSlider = rootView.findViewById(R.id.head_controll_slider)
 
-        val displayBacklightSwitch: Switch = rootView.findViewById(R.id.display_backlight_switch)
+        displayBacklightSwitch = rootView.findViewById(R.id.display_backlight_switch)
+        distanceSensorSwitch = rootView.findViewById(R.id.distance_sensor_switch)
+        distanceSensorSwitch.isSelected = true
+
+        distanceSensorSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            run {
+
+                val action: String
+                if(BluetoothService.customCharacteristic != null) {
+                    action = if(isChecked) {
+                        ";DSN,TRUE\n"
+                    } else {
+                        val mainActivity = activity as MainActivity
+                        mainActivity.clearDistance()
+                        ";DSN,FALSE\n"
+                    }
+                    BluetoothService.customCharacteristic?.setValue(action)
+                    BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
+                } else {
+                    Toast.makeText(
+                        buttonView?.context,
+                        "Najpiew podłącz się do urządzenia bluetooth",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
 
         displayBacklightSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             run {
             val action: String
             if (BluetoothService.customCharacteristic != null) {
                 action = if(isChecked) {
-                    "CMD+DSPBKLON\n"
+                    ";DSB,ON\n"
                 } else {
-                    "CMD+DSPBKLOFF\n"
+                    ";DSB,OFF\n"
                 }
                 BluetoothService.customCharacteristic?.setValue(action)
                 BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
@@ -95,31 +139,31 @@ class SteeringFragment : Fragment() {
         }
 
 
-        headControlSlider.progress = 50
-        headControlSlider.max = 100
+        headControlSlider.progress = 90
+        headControlSlider.max = 180
 
         moveHeadForwardButton.setOnClickListener{
-            headControlSlider.progress = 50
+            headControlSlider.progress = 90
             if(BluetoothService.customCharacteristic != null) {
-                val action = "CMD+DSTSENCENTER\n"
+                val action = ";DST,90\n"
                 BluetoothService.customCharacteristic?.setValue(action)
                 BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
             }
         }
 
         moveHeadLeftButton.setOnClickListener{
-            headControlSlider.progress = 0
+            headControlSlider.progress = 9
             if(BluetoothService.customCharacteristic != null) {
-                val action = "CMD+DSTSENLEFT\n"
+                val action = ";DST,9\n"
                 BluetoothService.customCharacteristic?.setValue(action)
                 BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
             }
         }
 
         moveHeadRightButton.setOnClickListener{
-            headControlSlider.progress = 100
+            headControlSlider.progress = 171
             if(BluetoothService.customCharacteristic != null) {
-                val action = "CMD+DSTSENRIGHT\n"
+                val action = ";DST,171\n"
                 BluetoothService.customCharacteristic?.setValue(action)
                 BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
             }
@@ -131,6 +175,8 @@ class SteeringFragment : Fragment() {
         velocitySeekBar.max = 160
 
         velocitySeekBar.setOnSeekBarChangeListener(VelocitySelectClass())
+
+        headControlSlider.setOnSeekBarChangeListener(DistanceSensorSelectorClass())
 
         val buttonSound1: Button = rootView.findViewById(R.id.sound_1)
         val buttonSound2: Button = rootView.findViewById(R.id.sound_2)
@@ -162,9 +208,27 @@ class SteeringFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(SteeringViewModel::class.java)
     }
 
+    class DistanceSensorSelectorClass: SeekBar.OnSeekBarChangeListener{
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            val action = ";DST,$progress\n"
+            if(progress%15 == 0) {
+                if (BluetoothService.customCharacteristic != null) {
+                    BluetoothService.customCharacteristic?.setValue(action)
+                    BluetoothService.bluetoothGatt?.writeCharacteristic(BluetoothService.customCharacteristic)
+                }
+            }
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+        }
+    }
+
     class VelocitySelectClass: SeekBar.OnSeekBarChangeListener{
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            val action = "CMD+SPEED$progress\n"
+            val action = ";SPD,$progress\n"
             if(progress%20 == 0) {
                 if (BluetoothService.customCharacteristic != null) {
                     BluetoothService.customCharacteristic?.setValue(action)
@@ -190,10 +254,10 @@ class SteeringFragment : Fragment() {
             if(BluetoothService.customCharacteristic != null) {
 
                 when (v?.id) {
-                    R.id.sound_1 -> action = "CMD+SOUND1\n"
-                    R.id.sound_2 -> action = "CMD+SOUND2\n"
-                    R.id.sound_3 -> action = "CMD+SOUND3\n"
-                    R.id.sound_4 -> action = "CMD+SOUND4\n"
+                    R.id.sound_1 -> action = ";SND,1\n"
+                    R.id.sound_2 -> action = ";SND,2\n"
+                    R.id.sound_3 -> action = ";SND,3\n"
+                    R.id.sound_4 -> action = ";SND,4\n"
                 }
 
                 BluetoothService.customCharacteristic?.setValue(action)
@@ -206,16 +270,16 @@ class SteeringFragment : Fragment() {
     }
 
     class SteeringClass : View.OnClickListener {
-        private val UP = "CMD+UP\n"
-        private val RIGHT = "CMD+RIGHT\n"
-        private val DOWN = "CMD+DOWN\n"
-        private val LEFT = "CMD+LEFT\n"
-        private val STOP = "CMD+STOP\n"
+        private val UP = ";MOV,UP\n"
+        private val RIGHT = ";MOV,RIGHT\n"
+        private val DOWN = ";MOV,DOWN\n"
+        private val LEFT = ";MOV,LEFT\n"
+        private val STOP = ";MOV,STOP\n"
 
-        private val UPRIGHT = "CMD+UPRIGHT\n"
-        private val UPLEFT = "CMD+UPLEFT\n"
-        private val DOWNRIGHT = "CMD+DOWNRIGHT\n"
-        private val DOWNLEFT = "CMD+DOWNLEFT\n"
+        private val UPRIGHT = ";MOV,UPRIGHT\n"
+        private val UPLEFT = ";MOV,UPLEFT\n"
+        private val DOWNRIGHT = ";MOV,DOWNRIGHT\n"
+        private val DOWNLEFT = ";MOV,DOWNLEFT\n"
         override fun onClick(v: View?) {
 
             if(BluetoothService.customCharacteristic != null) {
