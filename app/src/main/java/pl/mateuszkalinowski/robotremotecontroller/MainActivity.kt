@@ -14,10 +14,11 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import pl.mateuszkalinowski.robotremotecontroller.bluetooth_settings.ACTION_GATT_CONNECTED
-import pl.mateuszkalinowski.robotremotecontroller.bluetooth_settings.ACTION_GATT_SERVICES_DISCOVERED
 import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService
+import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService.Companion.ACTION_GATT_CONNECTED
+import pl.mateuszkalinowski.robotremotecontroller.services.BluetoothService.Companion.ACTION_GATT_SERVICES_DISCOVERED
 import pl.mateuszkalinowski.robotremotecontroller.steering.SteeringFragment
+import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -40,19 +41,57 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var connectionStatusTextView: TextView
 
-    var deviceUUID: String = ""
-    var deviceName: String = ""
+    var wasDisconnected = false
 
-    var c = '\u0000'
+    private var deviceUUID: String = ""
+    private var deviceName: String = ""
 
-    private var distance: String = "";
+    private var distance: String = ""
 
     fun getDistance(): String {
         return distance
     }
 
     fun clearDistance() {
-        distance = "";
+        distance = ""
+    }
+
+    fun setConnectionStatus() {
+        if(BluetoothService.bluetoothGatt != null && BluetoothService.customCharacteristic != null) {
+            connectionStatusTextView.text = getString(R.string.connected)
+            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
+            connectButton.text = getString(R.string.disconnect)
+        } else {
+            connectionStatusTextView.text = getString(R.string.disconnected)
+            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.failure))
+            connectButton.text = getString(R.string.connect)
+        }
+    }
+
+    fun connect() {
+
+        setBluetoothDeviceAddressAndName()
+
+       if(BluetoothService.customCharacteristic == null) {
+           if(deviceUUID != "") {
+
+               bluetoothAdapter?.takeIf { it.isDisabled }?.apply {
+                   val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                   startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+               }
+
+               bluetoothDevice =
+                   bluetoothAdapter!!.getRemoteDevice(deviceUUID)
+
+               bluetoothGatt =
+                   bluetoothDevice!!.connectGatt(applicationContext, false, mGattCallback)
+
+               BluetoothService.bluetoothGatt = bluetoothGatt
+           } else {
+               Toast.makeText(applicationContext,"Nie znaleziono urządzenia. Wybierz urządzenie bluetooth z ustawień",Toast.LENGTH_LONG).show()
+           }
+
+       }
     }
 
 
@@ -89,14 +128,7 @@ class MainActivity : AppCompatActivity() {
         connectionStatusTextView = findViewById(R.id.connection_status)
         connectButton = findViewById(R.id.button_recconect)
 
-        if(BluetoothService.bluetoothGatt != null && BluetoothService.customCharacteristic != null) {
-            connectionStatusTextView.text = "Połączony"
-            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
-            connectButton.text = "Rozłącz"
-        } else {
-            connectionStatusTextView.text = "Rozłączony"
-            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.failure))
-        }
+        setConnectionStatus()
 
         connectButton.setOnClickListener{
             if(BluetoothService.bluetoothGatt != null) {
@@ -104,9 +136,9 @@ class MainActivity : AppCompatActivity() {
                 BluetoothService.bluetoothGatt = null
                 BluetoothService.customCharacteristic = null
 
-                connectionStatusTextView.text = "Rozłączony"
+                connectionStatusTextView.text = getString(R.string.disconnected)
                 connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.failure))
-                connectButton.text = "Połącz"
+                connectButton.text = getString(R.string.connect)
             } else {
                 if(deviceUUID =="") {
                     Toast.makeText(applicationContext,"Nie znaleziono urządzenia. Wybierz urządzenie bluetooth z ustawień",Toast.LENGTH_LONG).show()
@@ -149,35 +181,23 @@ class MainActivity : AppCompatActivity() {
 
                 BluetoothService.bluetoothGatt = bluetoothGatt
             }
-
-
-
         } else {
             Toast.makeText(applicationContext,"Nie znaleziono urządzenia. Wybierz urządzenie bluetooth z ustawień",Toast.LENGTH_LONG).show()
         }
 
-
-        if(BluetoothService.bluetoothGatt != null && BluetoothService.customCharacteristic != null) {
-            connectionStatusTextView.text = "Połączony"
-            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
-            connectButton.text = "Rozłącz"
-        } else {
-            connectionStatusTextView.text = "Rozłączony"
-            connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.failure))
-        }
+        setConnectionStatus()
     }
 
 
-
     fun setBluetoothDeviceAddressAndName(){
-        var sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = getSharedPreferences("bluetooth-data",Context.MODE_PRIVATE)
         deviceUUID = sharedPreferences.getString("device_mac_address", "").orEmpty()
         deviceName = sharedPreferences.getString("device_name","").orEmpty()
     }
 
-    val mGattCallback = object : BluetoothGattCallback() {
+    private val mGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            var intentAction: String;
+            val intentAction: String
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 intentAction = ACTION_GATT_CONNECTED
                 broadcastUpdate(intentAction)
@@ -188,14 +208,14 @@ class MainActivity : AppCompatActivity() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                for (gattService in gatt!!.getServices()) {
-                    Log.i("BLUETOOTH", "onServicesDiscovered: ---------------------")
-                    Log.i("BLUETOOTH", "onServicesDiscovered: service=" + gattService.uuid)
+                for (gattService in gatt!!.services) {
+//                    Log.i("BLUETOOTH", "onServicesDiscovered: ---------------------")
+//                    Log.i("BLUETOOTH", "onServicesDiscovered: service=" + gattService.uuid)
                     for (characteristic in gattService.characteristics) {
-                        Log.i(
-                            "BLUETOOTH",
-                            "onServicesDiscovered: characteristic=" + characteristic.uuid
-                        )
+//                        Log.i(
+//                            "BLUETOOTH",
+//                            "onServicesDiscovered: characteristic=" + characteristic.uuid
+//                        )
                         if (characteristic.uuid == UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")) {
                             customCharacteristic = characteristic
                             BluetoothService.customCharacteristic = customCharacteristic
@@ -209,16 +229,24 @@ class MainActivity : AppCompatActivity() {
                             bluetoothGatt?.writeDescriptor(descriptor)
 
                             runOnUiThread {
-                                connectionStatusTextView.text = "Połączony"
+                                connectionStatusTextView.text = getString(R.string.connected)
                                 connectionStatusTextView.setTextColor(ContextCompat.getColor(applicationContext, R.color.success))
-                                connectButton.text = "Rozłącz"
+                                connectButton.text = getString(R.string.disconnect)
 
                                 val navHostFragment =
                                     supportFragmentManager.findFragmentById(R.id.navigation_fragment)
 
-                                var test = navHostFragment?.childFragmentManager?.fragments?.get(0) as SteeringFragment
+                                navHostFragment?.childFragmentManager?.fragments?.forEach { e -> run{
+                                    Log.i("FRAGMENTS",e.toString())
+                                } }
+                                try {
+                                    val test =
+                                        navHostFragment?.childFragmentManager?.fragments?.get(0) as SteeringFragment
 
-                                test.setDefaultSettings()
+                                    test.setDefaultSettings()
+                                } catch (e: Exception) {
+                                    wasDisconnected = true
+                                }
                             }
                         }
                     }
@@ -235,23 +263,12 @@ class MainActivity : AppCompatActivity() {
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?
         ) {
-            //super.onCharacteristicChanged(gatt, characteristic)
             val receivedValue = characteristic?.getStringValue(0).orEmpty()
             if(receivedValue.startsWith("MSG,DST",ignoreCase = true)) {
                     distance = receivedValue.substring("MSG,DST".length)
                 }
         }
-
     }
-
-
-    fun convertFromInteger(i: Int): UUID {
-        val MSB = 0x0000000000001000L
-        val LSB = -0x7fffff7fa064cb05L
-        val value = (i and -0x1).toLong()
-        return UUID(MSB or (value shl 32), LSB)
-    }
-
     private fun broadcastUpdate(action: String) {
         val intent = Intent(action)
         sendBroadcast(intent)

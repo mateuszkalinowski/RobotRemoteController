@@ -2,7 +2,6 @@ package pl.mateuszkalinowski.robotremotecontroller.steering
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +16,11 @@ class SteeringFragment : Fragment() {
 
     private lateinit var viewModel: SteeringViewModel
 
-    lateinit var velocitySeekBar: SeekBar
-    lateinit var headControlSlider: SeekBar
+    private lateinit var velocitySeekBar: SeekBar
+    private lateinit var headControlSlider: SeekBar
 
-    lateinit var displayBacklightSwitch: Switch
-    lateinit var distanceSensorSwitch: Switch
+    private lateinit var displayBacklightSwitch: Switch
+    private lateinit var distanceSensorSwitch: Switch
 
     fun setDefaultSettings() {
         velocitySeekBar.progress = 100
@@ -41,25 +40,21 @@ class SteeringFragment : Fragment() {
 
         val distanceTextView: TextView = rootView.findViewById(R.id.distance_text_view)
 
-        var thread = object : Thread() {
+        val thread = object : Thread() {
 
             override fun run() {
                 try {
                     while (!this.isInterrupted) {
                         sleep(2000)
-                        activity?.runOnUiThread(Runnable {
-
-                        var mainActivity = activity as MainActivity
-
+                        activity?.runOnUiThread {
+                            val mainActivity = activity as MainActivity
                             distanceTextView.text = mainActivity.getDistance()
-
-
-                        })
+                        }
                     }
                 } catch (e: InterruptedException) {
-                    activity?.runOnUiThread(Runnable {
+                    activity?.runOnUiThread {
                         distanceTextView.text = ""
-                    })
+                    }
                 }
 
             }
@@ -202,6 +197,17 @@ class SteeringFragment : Fragment() {
         return rootView
     }
 
+    override fun onResume() {
+        super.onResume()
+        val mainActivity = activity as MainActivity
+        if(mainActivity.wasDisconnected) {
+            mainActivity.wasDisconnected = false
+            setDefaultSettings()
+        }
+
+        mainActivity.connect()
+
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

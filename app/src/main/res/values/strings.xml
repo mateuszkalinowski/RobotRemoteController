@@ -4,4 +4,9 @@
     <string name="information_menu_label">Informacje</string>
     <string name="settings_menu_label">Ustawienia</string>
     <string name="title_activity_bluetooth_settings">Ustawienia Bluetooth</string>
+    <string name="disconnected">Rozłączony</string>
+    <string name="connect">Połącz</string>
+    <string name="connected">Połączony</string>
+    <string name="disconnect">Rozłącz</string>
+    <string name="no_paired_deviced">Brak sparowanego urządzenia</string>
 </resources>

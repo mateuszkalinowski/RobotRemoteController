@@ -10,36 +10,146 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+<!--        <TextView-->
+<!--            android:id="@+id/textView2"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="176dp"-->
+<!--            android:layout_marginTop="128dp"-->
+<!--            android:layout_marginEnd="176dp"-->
+<!--            android:text="Ustawienia"-->
+<!--            android:textColor="@android:color/black"-->
+<!--            android:textSize="64sp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="409dp"-->
+<!--            android:layout_height="672dp"-->
+<!--            android:layout_marginStart="1dp"-->
+<!--            android:layout_marginTop="128dp"-->
+<!--            android:layout_marginEnd="1dp"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/textView2">-->
+
+<!--            <Button-->
+<!--                android:id="@+id/bluetoothsettingsbutton"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Ustawienia Bluetooth" />-->
+<!--        </LinearLayout>-->
+
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="176dp"
-            android:layout_marginTop="128dp"
-            android:layout_marginEnd="176dp"
-            android:text="Ustawienia"
+            android:layout_marginTop="49dp"
+            android:text="Ustawienia Bluetooth"
             android:textColor="@android:color/black"
-            android:textSize="64sp"
+            android:textSize="36sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="409dp"
-            android:layout_height="672dp"
-            android:layout_marginStart="1dp"
+        <ImageView
+            android:id="@+id/bluetooth_icon"
+            android:layout_width="45dp"
+            android:layout_height="75dp"
+            android:layout_weight="0"
+            app:layout_constraintBottom_toTopOf="@+id/textView5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:srcCompat="@drawable/ic_bluetooth_connected_black_24dp" />
+
+        <TextView
+            android:id="@+id/device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="TextView"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            app:layout_constraintStart_toEndOf="@+id/bluetooth_icon"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/device_mac_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="@android:color/black"
+            app:layout_constraintBottom_toTopOf="@+id/textView5"
+            app:layout_constraintStart_toEndOf="@+id/bluetooth_icon"
+            app:layout_constraintTop_toBottomOf="@+id/device_name" />
+
+        <ImageButton
+            android:id="@+id/cancel_paring_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="24dp"
+            android:layout_weight="0"
+            android:background="#00000000"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_cancel_black_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/device_mac_address"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/device_name" />
+
+        <Button
+            android:id="@+id/button_start_scanning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Skanuj"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ListView
+            android:id="@+id/bluetooth_devices_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_marginTop="128dp"
-            android:layout_marginEnd="1dp"
-            android:orientation="vertical"
+            android:layout_marginBottom="160dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2">
+            app:layout_constraintTop_toBottomOf="@+id/textView4" >
 
-            <Button
-                android:id="@+id/bluetoothsettingsbutton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ustawienia Bluetooth" />
-        </LinearLayout>
+        </ListView>
+
+        <ProgressBar
+            android:id="@+id/scanning_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bluetooth_devices_list" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:text="Sparowane urządzenie:"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="11dp"
+            android:text="Wykryte urządzenia:"
+            app:layout_constraintBottom_toTopOf="@+id/bluetooth_devices_list"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
